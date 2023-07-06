@@ -14,52 +14,13 @@
 		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
-       default-lazy-init="true">
-    <!-- 是用于激活那些已经在spring容器里注册过的bean上面的注解，也就是显示的向Spring注册 -->
-    <context:annotation-config />
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <!-- 扫描service、dao -->
-    <context:component-scan base-package="com.itcast.mall" />
+    <context:component-scan base-package="com.itcast.mall" annotation-config="true"/>
 
-    <mvc:default-servlet-handler/>
-    <mvc:annotation-driven></mvc:annotation-driven>
+    <!--<context:annotation-config/>-->
+    <aop:aspectj-autoproxy/>
 
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/"></property>
-        <property name="suffix" value=".jsp"></property>
-    </bean>
-
-    <!-- 配置数据库连接池 -->
-    <context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>
-
-    <!-- 声明数据源DataSource -->
-    <bean id="myDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <property name="url" value="${jdbc.url}"/>
-        <property name="username" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
-    </bean>
-
-    <!-- 声明SqlSessionFactoryBean，在这个类的内部，创建SqlSessionFactory对象，之后就可以获取SqlSession对象 -->
-    <bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <!-- 指定数据源 -->
-        <property name="dataSource" ref="myDataSource"/>
-        <!-- 指定mybatis主配置文件 -->
-        <property name="configLocation" value="classpath:mybatis.xml"/>
-    </bean>
-
-    <!-- 声明MapperScannerConfigurer -->
-    <!--
-         MapperScannerConfigurer作用：
-           循环basePackage所表示的包，把包中的每个接口都找到，调用SqlSession.getMapper(XXXDao.class)
-           把每个dao接口都创建出对应的dao代理对象，将dao代理对象放在容器中
-           对于StudentDao接口，其代理对象为 studentDao
-    -->
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <!-- 指定SqlSessionFactory对象的名称 -->
-        <property name="sqlSessionFactoryBeanName" value="factory"/>
-        <!-- 指定基本包，dao接口所在的包名 -->
-        <property name="basePackage" value="com.itcast.mall.dao"/>
-    </bean>
+    <import resource="applicationContext-datasource.xml"/>
 
 </beans>
